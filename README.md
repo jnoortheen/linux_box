@@ -18,15 +18,22 @@ Configuration Changes
 	``````````````````
 
 -	Added a user called grader with sudoer rights
-	``````````````
+	`````````````````````````
 	# adduser grader
 	# usermod -aG sudo grader
-	``````````````
+	`````````````````````````
+
+-	Enabling key based authentication for the new user
+	-	generate a new key by on the local machine
+	`````````````
+	$ ssh-keygen
+	`````````````
+	-	update the public key to the server machine's ~/.ssh/authorized_keys file. Hereafter use your private key file to login to the server.
 
 -	Configure ssh to use port 2200 instead of default 22 by changing the Port in config file
 	``````````````````````````
 	# vim /etc/ssh/sshd_config
-	# sudo ssh service restart
+	# sudo service ssh restart
 	``````````````````````````
 
 -	Firewall configuration to allow only selected ports
@@ -36,17 +43,19 @@ Configuration Changes
 	# ufw allow 2200/tcp
 	# ufw allow 80/tcp
 	# ufw allow 123/tcp
+	# ufw deny 22/tcp
+	# ufw deny 22
 	# ufw enable
 	# ufw status
 	````````````````````````````
 
 -	Configure a postgresql user and create a database which will be used by the application to connect.
-	```````````````````````````````
+	``````````````````````````````````````````````````````````
 	$ sudo -u postgres psql
 	psql> create user catalog with password catalog;
 	psql> create database catalog;
 	psql> grant all privileges on database catalog to catalog;
-	`````````````````````````````
+	``````````````````````````````````````````````````````````
 
 -	Clone the catalog application repo and installing required libraries
 	``````````````````````````````````````````````````````````````
@@ -66,9 +75,15 @@ Configuration Changes
 	`````````````````````
 
 -	Configure Apache server to run 'mobile_catalog', flask application by inserting "WSGIScriptAlias / /var/www/html/mobile_catalogue/mobile_catalogue/catalog.wsgi" line to the below file just before where </VirtualHost> appears.
-	```````````````````````````````
+	`````````````````````````````````````````````````
 	# vim /etc/apache2/sites-enabled/000-default.conf
 	# service apache2 restart
+	`````````````````````````````````````````````````
+
+-	disable remote login for root user by editing /etc/ssh/sshd_config and enable only key based authentication for other users.
+	```````````````````````````````
+	$ sudo vim /etc/ssh/sshd_config	
+	$ sudo service ssh restart
 	```````````````````````````````
 
 Server Details
